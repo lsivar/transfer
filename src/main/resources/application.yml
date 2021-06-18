@@ -1,0 +1,18 @@
+# 应用名称
+spring:
+  application:
+    name: transfer
+
+server:
+  port: 11010
+
+
+#  基恩士配置
+keyence:
+  ip: 192.168.1.200
+
+#  斑马配置
+zebra:
+  write: 'http://127.0.0.1:9100/write'
+  info: 'http://127.0.0.1:9100/default?type=printer'
+  available: 'http://127.0.0.1:9100/available'
