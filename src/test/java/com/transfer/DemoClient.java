@@ -16,7 +16,7 @@ import java.util.Scanner;
  **/
 public class DemoClient {
     public static void main(String[] args) {
-        NioClient client = new NioClient("192.168.1.200", 9004);
+        NioClient client = new NioClient("169.254.103.2", 2001);
         client.setChannelHandler((sc) -> {
             ByteBuffer readBuffer = ByteBuffer.allocate(1024);
             //从channel读数据到缓冲区
@@ -37,8 +37,6 @@ public class DemoClient {
             }
         });
         client.listen();
-        client.write(BufferUtil.createUtf8("你好。\n"));
-        client.write(BufferUtil.createUtf8("你好2。"));
 // 在控制台向服务器端发送数据
         Console.log("请输入发送的消息：");
         Scanner scanner = new Scanner(System.in);
