@@ -35,11 +35,11 @@ public class KeyenceController {
      * 执行命令
      */
     @GetMapping(value = "send/{command}")
-    public R test(@PathVariable("command") String command) {
+    public R send(@PathVariable("command") String command) {
         Socket client = null;
         try {
             client = new Socket(ip, 9004);
-            client.setSoTimeout(50000);
+            client.setSoTimeout(3000);
             //获取Socket的输出流，用来发送数据到服务端
             PrintStream out = new PrintStream(client.getOutputStream());
             //获取Socket的输入流，用来接收从服务端发送过来的数据

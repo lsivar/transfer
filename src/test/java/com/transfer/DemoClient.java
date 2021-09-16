@@ -2,9 +2,15 @@ package com.transfer;
 
 import cn.hutool.core.io.BufferUtil;
 import cn.hutool.core.lang.Console;
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.socket.nio.NioClient;
+import com.transfer.rest.R;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.Scanner;
 
@@ -16,38 +22,32 @@ import java.util.Scanner;
  **/
 public class DemoClient {
     public static void main(String[] args) {
-        NioClient client = new NioClient("192.168.1.200", 9004);
-        client.setChannelHandler((sc) -> {
-            ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-            //从channel读数据到缓冲区
-            int readBytes = sc.read(readBuffer);
-            if (readBytes > 0) {
-                //Flips this buffer.  The limit is set to the current position and then
-                // the position is set to zero，就是表示要从起始位置开始读取数据
-                readBuffer.flip();
-                //returns the number of elements between the current position and the  limit.
-                // 要读取的字节长度
-                byte[] bytes = new byte[readBuffer.remaining()];
-                //将缓冲区的数据读到bytes数组
-                readBuffer.get(bytes);
-                String body = StrUtil.utf8Str(bytes);
-                Console.log("[{}]: {}", sc.getRemoteAddress(), body);
-            } else if (readBytes < 0) {
-                sc.close();
-            }
-        });
-        client.listen();
-        client.write(BufferUtil.createUtf8("你好。\n"));
-        client.write(BufferUtil.createUtf8("你好2。"));
-// 在控制台向服务器端发送数据
-        Console.log("请输入发送的消息：");
-        Scanner scanner = new Scanner(System.in);
-        while (scanner.hasNextLine()) {
-            String request = scanner.nextLine();
-            if (request != null && request.trim().length() > 0) {
-                client.write(BufferUtil.createUtf8(request));
+        Socket client = null;
+        String ip = "172.30.10.171";
+        String command = "LOFF";
+//        String command = "LON";
+        try {
+            client = new Socket(ip, 9004);
+            client.setSoTimeout(3000);
+
+            //获取Socket的输出流，用来发送数据到服务端
+            PrintStream out = new PrintStream(client.getOutputStream());
+            //获取Socket的输入流，用来接收从服务端发送过来的数据
+            BufferedReader buf = new BufferedReader
+                    (new InputStreamReader(client.getInputStream(), CharsetUtil.UTF_8));
+            //发送数据到服务端
+            out.println(command);
+            String echo = buf.readLine();
+            System.out.println(echo);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                assert client != null;
+                client.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-
     }
 }
